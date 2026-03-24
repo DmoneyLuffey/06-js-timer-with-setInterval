@@ -7,8 +7,19 @@ const startButton = document.querySelector('#startButton');
 // Initialize the timer value
 let timerValue = 20;
 
+// Track if confetti has been triggered to avoid multiple triggers
+let confettiTriggered = false;
+
+// Track if we are in the active countdown
+let countdownActive = false;
+
 // Function to start the countdown
 function startCountdown() {
+    // Reset values for a new countdown
+    timerValue = 20;
+    confettiTriggered = false;
+    countdownActive = true;
+    
     const countdownInterval = setInterval(function() {
         // Decrement the timer value
         timerValue--;
@@ -19,6 +30,7 @@ function startCountdown() {
         if (timerValue <= 0) {
             clearInterval(countdownInterval);
             timerDisplay.textContent = '0'; // Ensure the display shows 0
+            countdownActive = false;
         }
     }, 1000);
 }
@@ -26,12 +38,28 @@ function startCountdown() {
 // Initialize the counter value
 let counterValue = 0;
 
+// Function to trigger confetti
+function triggerConfetti() {
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
+
 // Function to increase the counter
 function increaseCounter() {
     // Increment the counter value
     counterValue++;
     // Update the counter display
     counterDisplay.textContent = counterValue;
+    
+    // Check if counter reached 10 or greater within 10 seconds
+    // timerValue >= 10 means less than 10 seconds have passed
+    if (counterValue >= 10 && timerValue >= 10 && countdownActive && !confettiTriggered) {
+        confettiTriggered = true;
+        triggerConfetti();
+    }
 }
 
 // Add an event listener to the increment button to increase the counter when clicked
